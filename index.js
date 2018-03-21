@@ -34,9 +34,9 @@ let pageFloClient = function (config) {
   let getFile = async function (spec) {
     let passthru = new Transform()
 
-    let headers = {}
-
-    headers.range = spec.headers.range
+    let headers = {
+      range: spec.headers.range
+    }
 
     let fileReq = await req.get({
       url: `http://localhost:8008/client/file/${spec.filename}`,

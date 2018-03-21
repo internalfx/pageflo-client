@@ -1,0 +1,11 @@
+{
+  "name": "pageflo-client",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "got": "^8.2.0",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2"
+  }
+}

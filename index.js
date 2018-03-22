@@ -1,6 +1,7 @@
-const got = require('got')
 const request = require('request')
+const Promise = require('bluebird')
 const { Transform } = require('stream')
+const requestPromise = require('request-promise')
 // const lruCache = require('lru-cache')
 
 let pageFloClient = function (config) {
@@ -8,24 +9,26 @@ let pageFloClient = function (config) {
   //   max: 500
   // })
 
-  let req = request.defaults({
-    auth: {
-      user: config.username,
-      pass: config.password
+  let defaults = {
+    headers: {
+      'Authorization': `Bearer ${config.apiKey}`
     }
-  })
+  }
+
+  let req = request.defaults(defaults)
+  let rp = requestPromise.defaults(defaults)
 
   let getBlock = async function (blockId) {
-    let res = await got(`http://localhost:8008/client/block/${blockId}`, {
-      auth: `${config.username}:${config.password}`
+    let res = await rp.get({
+      url: `http://localhost:8008/client/block/${blockId}`
     })
 
     return res.body
   }
 
   let getPage = async function (pageId) {
-    let res = await got(`http://localhost:8008/client/page/${pageId}`, {
-      auth: `${config.username}:${config.password}`
+    let res = await rp.get({
+      url: `http://localhost:8008/client/page/${pageId}`
     })
 
     return res.body

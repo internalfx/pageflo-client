@@ -18,20 +18,22 @@ let pageFloClient = function (config) {
   let req = request.defaults(defaults)
   let rp = requestPromise.defaults(defaults)
 
-  let getBlock = async function (blockId) {
+  let getBlock = async function (params) {
     let res = await rp.get({
-      url: `http://localhost:8008/client/block/${blockId}`
+      url: `http://localhost:8008/client/block/`,
+      qs: params
     })
 
-    return res.body
+    return res
   }
 
-  let getPage = async function (pageId) {
+  let getPage = async function (params) {
     let res = await rp.get({
-      url: `http://localhost:8008/client/page/${pageId}`
+      url: `http://localhost:8008/client/page/`,
+      qs: params
     })
 
-    return res.body
+    return res
   }
 
   let getFile = async function (spec) {

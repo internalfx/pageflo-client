@@ -22,7 +22,7 @@ let pageFloClient = function (config) {
     let res = await rp.get({
       url: `${config.protocol}://${config.host}/client/block/`,
       qs: params
-    })
+    }).catch(function () { return '' })
 
     return res
   }
@@ -31,7 +31,7 @@ let pageFloClient = function (config) {
     let res = await rp.get({
       url: `${config.protocol}://${config.host}/client/page/`,
       qs: params
-    })
+    }).catch(function () { return '' })
 
     return res
   }

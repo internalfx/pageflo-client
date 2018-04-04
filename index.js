@@ -20,7 +20,7 @@ let pageFloClient = function (config) {
 
   let getBlock = async function (params) {
     let res = await rp.get({
-      url: `http://localhost:8008/client/block/`,
+      url: `${config.protocol}://${config.host}/client/block/`,
       qs: params
     })
 
@@ -29,7 +29,7 @@ let pageFloClient = function (config) {
 
   let getPage = async function (params) {
     let res = await rp.get({
-      url: `http://localhost:8008/client/page/`,
+      url: `${config.protocol}://${config.host}/client/page/`,
       qs: params
     })
 
@@ -44,7 +44,7 @@ let pageFloClient = function (config) {
     }
 
     let fileReq = await req.get({
-      url: `http://localhost:8008/client/file/${spec.filename}`,
+      url: `${config.protocol}://${config.host}/client/file/${spec.filename}`,
       qs: {
         w: spec.width,
         h: spec.height

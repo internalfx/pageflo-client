@@ -4,37 +4,34 @@ const { Transform } = require('stream')
 const requestPromise = require('request-promise')
 // const lruCache = require('lru-cache')
 
+const defaultConfig = {
+  server: {
+    apiKey: null,
+    host: null,
+    protocol: 'https'
+  },
+  client: {
+    filesPath: '/files'
+  }
+}
+
 let pageFloClient = function (config) {
   // let cache = lruCache({
   //   max: 500
   // })
+  let server = {...defaultConfig.server, ...config.server}
+  let client = {...defaultConfig.client, ...config.client}
+
+  console.log(server, client)
 
   let defaults = {
     headers: {
-      'Authorization': `Bearer ${config.apiKey}`
+      'Authorization': `Bearer ${server.apiKey}`
     }
   }
 
   let req = request.defaults(defaults)
   let rp = requestPromise.defaults(defaults)
-
-  let getBlock = async function (params) {
-    let res = await rp.get({
-      url: `${config.protocol}://${config.host}/client/block/`,
-      qs: params
-    }).catch(function () { return '' })
-
-    return res
-  }
-
-  let getPage = async function (params) {
-    let res = await rp.get({
-      url: `${config.protocol}://${config.host}/client/page/`,
-      qs: params
-    }).catch(function () { return '' })
-
-    return res
-  }
 
   let getFile = async function (spec) {
     let passthru = new Transform()
@@ -44,7 +41,7 @@ let pageFloClient = function (config) {
     }
 
     let fileReq = await req.get({
-      url: `${config.protocol}://${config.host}/client/file/${spec.filename}`,
+      url: `${server.protocol}://${server.host}/client/file/${spec.filename}`,
       qs: {
         w: spec.width,
         h: spec.height
@@ -73,10 +70,49 @@ let pageFloClient = function (config) {
     }
   }
 
+  let getBlock = async function (params) {
+    console.log({client, ...params})
+    let res = await rp.post({
+      url: `${server.protocol}://${server.host}/client/block`,
+      body: {client, ...params},
+      json: true
+    }).catch(function (err) {
+      console.log(err)
+      return ''
+    })
+
+    return res
+  }
+
+  let getPage = async function (params) {
+    let res = await rp.post({
+      url: `${server.protocol}://${server.host}/client/page`,
+      body: {client, ...params},
+      json: true
+    }).catch(function () { return null })
+
+    // res = JSON.parse(res)
+
+    return res
+  }
+
+  let getCollection = async function (params) {
+    let res = await rp.post({
+      url: `${server.protocol}://${server.host}/client/collection`,
+      body: {client, ...params},
+      json: true
+    }).catch(function () { return null })
+
+    // res = JSON.parse(res)
+
+    return res
+  }
+
   return Object.freeze({
+    getFile,
     getBlock,
     getPage,
-    getFile
+    getCollection
   })
 }
 

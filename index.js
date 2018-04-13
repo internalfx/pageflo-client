@@ -22,7 +22,20 @@ let pageFloClient = function (config) {
   let server = {...defaultConfig.server, ...config.server}
   let client = {...defaultConfig.client, ...config.client}
 
-  console.log(server, client)
+  let cleanHeaders = function (headers) {
+    headers = {...headers}
+    delete headers.cookie
+    return headers
+  }
+
+  let buildPayload = function (params) {
+    if (params.headers == null) {
+      console.log('PAGEFLO: headers missing!')
+    } else {
+      params.headers = cleanHeaders(params.headers)
+    }
+    return {client, ...params}
+  }
 
   let defaults = {
     headers: {
@@ -33,20 +46,15 @@ let pageFloClient = function (config) {
   let req = request.defaults(defaults)
   let rp = requestPromise.defaults(defaults)
 
-  let getFile = async function (spec) {
+  let getFile = async function (params) {
     let passthru = new Transform()
 
-    let headers = {
-      range: spec.headers.range
-    }
+    // let headers = cleanHeaders(spec.headers)
 
-    let fileReq = await req.get({
-      url: `${server.protocol}://${server.host}/client/file/${spec.filename}`,
-      qs: {
-        w: spec.width,
-        h: spec.height
-      },
-      headers: headers
+    let fileReq = await req.post({
+      url: `${server.protocol}://${server.host}/client/file`,
+      body: buildPayload(params),
+      json: true
     })
 
     passthru._transform = function (chunk, encoding, callback) {
@@ -71,10 +79,9 @@ let pageFloClient = function (config) {
   }
 
   let getBlock = async function (params) {
-    console.log({client, ...params})
     let res = await rp.post({
       url: `${server.protocol}://${server.host}/client/block`,
-      body: {client, ...params},
+      body: buildPayload(params),
       json: true
     }).catch(function (err) {
       console.log(err)
@@ -87,9 +94,12 @@ let pageFloClient = function (config) {
   let getPage = async function (params) {
     let res = await rp.post({
       url: `${server.protocol}://${server.host}/client/page`,
-      body: {client, ...params},
+      body: buildPayload(params),
       json: true
-    }).catch(function () { return null })
+    }).catch(function (err) {
+      console.log(err)
+      return null
+    })
 
     // res = JSON.parse(res)
 
@@ -99,9 +109,12 @@ let pageFloClient = function (config) {
   let getCollection = async function (params) {
     let res = await rp.post({
       url: `${server.protocol}://${server.host}/client/collection`,
-      body: {client, ...params},
+      body: buildPayload(params),
       json: true
-    }).catch(function () { return null })
+    }).catch(function (err) {
+      console.log(err)
+      return null
+    })
 
     // res = JSON.parse(res)
 

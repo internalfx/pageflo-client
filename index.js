@@ -49,12 +49,11 @@ let pageFloClient = function (config) {
   let getFile = async function (params) {
     let passthru = new Transform()
 
-    // let headers = cleanHeaders(spec.headers)
-
     let fileReq = await req.post({
       url: `${server.protocol}://${server.host}/client/file`,
       body: buildPayload(params),
-      json: true
+      json: true,
+      headers: {range: params.headers.range}
     })
 
     passthru._transform = function (chunk, encoding, callback) {

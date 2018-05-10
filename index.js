@@ -90,21 +90,6 @@ let pageFloClient = function (config) {
     return res
   }
 
-  let getPage = async function (params) {
-    let res = await rp.post({
-      url: `${server.protocol}://${server.host}/client/page`,
-      body: buildPayload(params),
-      json: true
-    }).catch(function (err) {
-      console.log(err)
-      return null
-    })
-
-    // res = JSON.parse(res)
-
-    return res
-  }
-
   let getCollection = async function (params) {
     let res = await rp.post({
       url: `${server.protocol}://${server.host}/client/collection`,
@@ -123,7 +108,6 @@ let pageFloClient = function (config) {
   return Object.freeze({
     getFile,
     getBlock,
-    getPage,
     getCollection
   })
 }
